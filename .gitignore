@@ -1,0 +1,25 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Java / Maven
+target/
+.classpath
+.project
+.settings/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment / secrets
+.env
+.env.*
+*.secret
+
+# OS
+.DS_Store
+Thumbs.db

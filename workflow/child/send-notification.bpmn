@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+                  id="Definitions_SendNotification"
+                  targetNamespace="http://example.com/hospital">
+  <bpmn:process id="send-notification" name="Send Notification" isExecutable="true">
+    <bpmn:startEvent id="Start_SendNotification" name="Start">
+      <bpmn:outgoing>Flow_Start_To_Rest</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:serviceTask id="Task_SendTelegram" name="Send Telegram message">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3"/>
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type"/>
+          <zeebe:input source="POST" target="method"/>
+          <zeebe:input source="https://api.telegram.org/bot{{secrets.TELEGRAM_BOT_TOKEN}}/sendMessage" target="url"/>
+          <zeebe:input source="={chat_id: recipientId, text: messageText}" target="body"/>
+          <zeebe:input source="20" target="connectionTimeoutInSeconds"/>
+          <zeebe:input source="20" target="readTimeoutInSeconds"/>
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultVariable" value="telegramResponse"/>
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Start_To_Rest</bpmn:incoming>
+      <bpmn:outgoing>Flow_Rest_To_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="End_SendNotification" name="Notification sent">
+      <bpmn:incoming>Flow_Rest_To_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_Start_To_Rest" sourceRef="Start_SendNotification" targetRef="Task_SendTelegram"/>
+    <bpmn:sequenceFlow id="Flow_Rest_To_End" sourceRef="Task_SendTelegram" targetRef="End_SendNotification"/>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SendNotification">
+    <bpmndi:BPMNPlane id="BPMNPlane_SendNotification" bpmnElement="send-notification">
+      <bpmndi:BPMNShape id="Shape_Start_SendNotification" bpmnElement="Start_SendNotification">
+        <dc:Bounds x="160" y="120" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_SendTelegram" bpmnElement="Task_SendTelegram">
+        <dc:Bounds x="260" y="98" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End_SendNotification" bpmnElement="End_SendNotification">
+        <dc:Bounds x="480" y="120" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Start_To_Rest" bpmnElement="Flow_Start_To_Rest">
+        <di:waypoint x="196" y="138"/>
+        <di:waypoint x="260" y="138"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Rest_To_End" bpmnElement="Flow_Rest_To_End">
+        <di:waypoint x="420" y="138"/>
+        <di:waypoint x="480" y="138"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

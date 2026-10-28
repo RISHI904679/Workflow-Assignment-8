@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+             id="Definitions_SlotDecision"
+             name="Slot Decision"
+             namespace="http://example.com/hospital">
+  <decision id="slot_decision" name="slot_decision">
+    <decisionTable id="DecisionTable_SlotDecision" hitPolicy="UNIQUE">
+      <input id="Input_Department" label="department">
+        <inputExpression id="InputExpression_Department" typeRef="string">
+          <text>department</text>
+        </inputExpression>
+      </input>
+      <input id="Input_BookedCount" label="bookedCount">
+        <inputExpression id="InputExpression_BookedCount" typeRef="number">
+          <text>bookedCount</text>
+        </inputExpression>
+      </input>
+
+      <output id="Output_Status" label="slotStatus" name="slotStatus" typeRef="string"/>
+      <output id="Output_Action" label="suggestedAction" name="suggestedAction" typeRef="string"/>
+
+      <rule id="Rule_Cardiology_Full">
+        <inputEntry id="Rule1_Department"><text>"Cardiology"</text></inputEntry>
+        <inputEntry id="Rule1_Count"><text>&gt;= 10</text></inputEntry>
+        <outputEntry id="Rule1_Status"><text>"FULL"</text></outputEntry>
+        <outputEntry id="Rule1_Action"><text>"NOTIFY_FULL"</text></outputEntry>
+      </rule>
+
+      <rule id="Rule_Cardiology_Available">
+        <inputEntry id="Rule2_Department"><text>"Cardiology"</text></inputEntry>
+        <inputEntry id="Rule2_Count"><text>&lt; 10</text></inputEntry>
+        <outputEntry id="Rule2_Status"><text>"AVAILABLE"</text></outputEntry>
+        <outputEntry id="Rule2_Action"><text>"BOOK"</text></outputEntry>
+      </rule>
+
+      <rule id="Rule_Other_Full">
+        <inputEntry id="Rule3_Department"><text>not("Cardiology")</text></inputEntry>
+        <inputEntry id="Rule3_Count"><text>&gt;= 10</text></inputEntry>
+        <outputEntry id="Rule3_Status"><text>"FULL"</text></outputEntry>
+        <outputEntry id="Rule3_Action"><text>"NOTIFY_FULL"</text></outputEntry>
+      </rule>
+
+      <rule id="Rule_Other_Available">
+        <inputEntry id="Rule4_Department"><text>not("Cardiology")</text></inputEntry>
+        <inputEntry id="Rule4_Count"><text>&lt; 10</text></inputEntry>
+        <outputEntry id="Rule4_Status"><text>"AVAILABLE"</text></outputEntry>
+        <outputEntry id="Rule4_Action"><text>"BOOK"</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_SlotDecision">
+      <dmndi:DMNShape id="DMNShape_SlotDecision" dmnElementRef="slot_decision">
+        <dc:Bounds x="160" y="100" width="180" height="80"/>
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
